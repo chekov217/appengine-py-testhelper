@@ -16,8 +16,8 @@ def is_in_production():
 if not is_in_production():
     import getpass
 
-    GAE_HOME = '/home/sigh/google_appengine'
-    PROJECT_HOME = '/home/sigh/tagomoris-test/trunk'
+    GAE_HOME = '/home/tagomoris/google_appengine'
+    PROJECT_HOME = '/home/tagomoris/tagomoris-test/trunk'
     EXTRA_PATHS = [
         GAE_HOME,
         PROJECT_HOME,
