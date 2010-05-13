@@ -5,6 +5,11 @@ import os, sys
 import functools
 import unittest
 
+APP_ID = u'tagomoris-test'
+LOCAL_GAE_HOME = '/home/tagomoris/google_appengine'
+LOCAL_PROJECT_HOME = '/home/tagomoris/tagomoris-test/trunk'
+REMOTE_API_ENTRY_POINT = '/remote_api'
+
 def is_in_production():
     try:
         from google3.apphosting.runtime import _apphosting_runtime___python__apiproxy
@@ -16,15 +21,13 @@ def is_in_production():
 if not is_in_production():
     import getpass
 
-    GAE_HOME = '/home/tagomoris/google_appengine'
-    PROJECT_HOME = '/home/tagomoris/tagomoris-test/trunk'
     EXTRA_PATHS = [
-        GAE_HOME,
-        PROJECT_HOME,
-        os.path.join(GAE_HOME, 'google', 'appengine', 'api'),
-        os.path.join(GAE_HOME, 'google', 'appengine', 'ext'),
-        os.path.join(GAE_HOME, 'lib', 'yaml', 'lib'),
-        os.path.join(GAE_HOME, 'lib', 'webob'),
+        LOCAL_GAE_HOME,
+        LOCAL_PROJECT_HOME,
+        os.path.join(LOCAL_GAE_HOME, 'google', 'appengine', 'api'),
+        os.path.join(LOCAL_GAE_HOME, 'google', 'appengine', 'ext'),
+        os.path.join(LOCAL_GAE_HOME, 'lib', 'yaml', 'lib'),
+        os.path.join(LOCAL_GAE_HOME, 'lib', 'webob'),
         ]
     sys.path = EXTRA_PATHS + sys.path
 
@@ -35,10 +38,8 @@ if not is_in_production():
     from google.appengine.api import urlfetch_stub
     from google.appengine.api import user_service_stub
 
-    APP_ID = u'tagomoris-test'
     AUTH_DOMAIN = 'gmail.com'
     LOGGED_IN_USER = 'test@gmail.com'
-    REMOTE_API_ENTRY_POINT = '/remote_api'
 
 
 from google.appengine.api import apiproxy_stub_map
@@ -90,6 +91,29 @@ class GAETestBase(unittest.TestCase):
     DEFAULT_CLEANUP_USED_KIND = False
     DEFAULT_KIND_PREFIX_IN_TEST = 't'
     DEFAULT_KIND_NAME_UNSWAPPED = False
+
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+
+        if hasattr(self, 'setUp'):
+            self.test_setup = self.setUp
+            def setup_env_and_test():
+                self._env_setUp()
+                self.test_setup()
+            self.setUp = setup_env_and_test
+        else:
+            self.setUp = self._env_setUp
+
+        if hasattr(self, 'tearDown'):
+            self.test_teardown = self.tearDown
+            def teardown_test_and_env():
+                try:
+                    self.test_teardown()
+                finally:
+                    self._env_tearDown()
+            self.tearDown = teardown_test_and_env
+        else:
+            self.tearDown = self._env_tearDown
 
     def use_production_environment(self):
         return getattr(self.__class__, 'USE_PRODUCTION_STUBS', GAETestBase.DEFAULT_USE_REMOTE_STUBS)
@@ -144,7 +168,7 @@ class GAETestBase(unittest.TestCase):
         db.Model.kind = classmethod(original_kind)
         db.class_for_kind = self.original_class_for_kind_method
 
-    def setUp(self):
+    def _env_setUp(self):
         self.kind_method_swapped = False
         self.original_kind_method = None
 
@@ -180,7 +204,7 @@ class GAETestBase(unittest.TestCase):
                     break
                 db.delete(l)
 
-    def tearDown(self):
+    def _env_tearDown(self):
         if self.may_cleanup_used_kind():
             self.delete_all_entities_of_used_kind()
             global kind_names_for_test
