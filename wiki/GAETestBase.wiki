@@ -22,7 +22,7 @@ This module depends on only Python 2.5 and App Engine SDK.
    * You can also run your tests with web-browser in your production environment. The test will be invoked under real production services(not memory based !DatastoreFileStub) if you configure to do so.
  * Run your tests with special overridden kind() method.
    * You can use this overridden kind method just in your tests without any changes in your code.
-     * For example, entities of  a model class "!MyModel" will be stored as kind "t__!MyModel".
+     * For example, entities of  a model class "!MyModel" will be stored as kind "t`_`!MyModel".
    * Especially useful with tests via remote_api and tests on production(GAEUnit) because you can run your tests without any data pollution.
      * Of course, you can suppress this behavior by configuration. By this way, you can access real business data on datastore in tests.
  * Clean up all the kinds that are used in your tests.
