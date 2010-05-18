@@ -19,10 +19,10 @@ This module depends on only Python 2.5 and App Engine SDK.
  * Run your tests via GAEUnit
    * GAEUnit is a web-based test runner hosted at: [http://code.google.com/p/gaeunit/ GAEUnit - Google Code]
    * You can run your test with web-browser in your development environment.
-   * You can also run your tests with web-browser in your production environment. The test will be invoked under real production services(not memory based DatastoreFileStub) if you configure to do so.
+   * You can also run your tests with web-browser in your production environment. The test will be invoked under real production services(not memory based !DatastoreFileStub) if you configure to do so.
  * Run your tests with special overridden kind() method.
    * You can use this overridden kind method just in your tests without any changes in your code.
-     * For example, entities of  a model class "MyModel" will be stored as kind "t_MyModel".
+     * For example, entities of  a model class "!MyModel" will be stored as kind "t_MyModel".
    * Especially useful with tests via remote_api and tests on production(GAEUnit) because you can run your tests without any data pollution.
      * Of course, you can suppress this behavior by configuration
  * Clean up all the kinds that are used in your tests.
@@ -35,7 +35,7 @@ This module depends on only Python 2.5 and App Engine SDK.
 
 
 
-     * Be careful with this special kind method in your TestCase. Please see an example bellow.
+     * Be careful with this special kind method in your !TestCase. Please see an example bellow.
 
                   Key.from_path('MyModel', id)       # NG!
                   Key.from_path(MyModel.kind(), id)  # OK!
