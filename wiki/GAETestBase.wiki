@@ -1,13 +1,45 @@
 #summary GAETestBase overview, functions,  and simple tutorials.
 
-= Introduction =
+= Overview =
+GAETestBase is a useful subclass of the standard unittest.TestCase. You can just write your test classes as usual by just extending GAETestBase class for utilizing this modules functionality.
 
-Add your content here.
+With this module, you can do
+ * skip to write code to setup dev environment
+ * run your tests via CLI as usual
+ * run your tests via GAEUnit under real production environment*
+ * run your tests with special overridden kind names
+ * clean up entities created within your tests 
 
+This module depends on only Python 2.5 and App Engine SDK.
+
+= What can I do with this module? =
+ * Run your tests via CLI
+   * You can run your tests without setting up necessary environments (e.g. stubs,  env, etc..)
+   * Tests will be use remote_api connection for accessing production datastore if you configure to do so in your TestCase.
+ * Run your tests via GAEUnit
+   * GAEUnit is a web-based test runner hosted at: [http://code.google.com/p/gaeunit/ GAEUnit - Google Code]
+   * You can run your test with web-browser in your development environment.
+   * You can also run your tests with web-browser in your production environment. The test will be invoked under real production services(not memory based DatastoreFileStub) if you configure to do so.
+ * Run your tests with special overridden kind() method.
+   * You can use this overridden kind method just in your tests without any changes in your code.
+     * For example, entities of  a model class "MyModel" will be stored as kind "t_MyModel".
+   * Especially useful with tests via remote_api and tests on production(GAEUnit) because you can run your tests without any data pollution.
+     * Of course, you can suppress this behavior by configuration
+ * Clean up all the kinds that are used in your tests.
+   * You can delete all the kinds used in your test after running your test.
+     * Only the kinds which is accessed in a particular TestCase, will be deleted.
+     * *accessed* here includes just reading. So if you read a existing kind, the kind will become a target of deletion.
+   * *CAUTION*: This feature could be very dangerous if you disable overridden kind method.
+
+== Cautions ==
+
+
+
+     * Be careful with this special kind method in your TestCase. Please see an example bellow.
+
+                  Key.from_path('MyModel', id)       # NG!
+                  Key.from_path(MyModel.kind(), id)  # OK!
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Let's do it =
