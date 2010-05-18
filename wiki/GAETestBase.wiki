@@ -1,7 +1,7 @@
 #summary GAETestBase overview, functions,  and simple tutorials.
 
 = Overview =
-GAETestBase is a useful subclass of the standard unittest.TestCase. You can just write your test classes as usual by just extending GAETestBase class for utilizing this modules functionality.
+GAETestBase is a useful subclass of the standard unittest.!TestCase. You can just write your test classes as usual by just extending GAETestBase class for utilizing this modules functionality.
 
 With this module, you can do
  * skip to write code to setup dev environment
