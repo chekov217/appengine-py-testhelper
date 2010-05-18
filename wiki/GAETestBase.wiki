@@ -64,6 +64,7 @@ This test runs as:
      * restore environment variables
 
 You can specify some options which environment tests run on. Options implemented as class attribute of your test cases.
+
 USE_PRODUCTION_STUBS:
  If True, tests run with real datastore (and other service stubs) in production environment.
  default: False
