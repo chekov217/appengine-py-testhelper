@@ -80,7 +80,7 @@ KIND_NAME_UNSWAPPED:
 KIND_PREFIX_IN_TEST:
  This attribute specifies prefix of overridden kind name.
  If KIND_NAME_UNSWAPPED is True, this option is ignored.
- default: 't' (in default, !MyModel.kind() returns 't_MyModel')
+ default: 't' (in default, !MyModel.kind() returns 't`_`!MyModel')
 
 == Cautions ==
 === Key generation ===
