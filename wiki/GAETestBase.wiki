@@ -6,7 +6,7 @@ GAETestBase is a useful subclass of the standard unittest.TestCase. You can just
 With this module, you can do
  * skip to write code to setup dev environment
  * run your tests via CLI as usual
- * run your tests via GAEUnit under real production environment*
+ * run your tests via GAEUnit under real production environment
  * run your tests with special overridden kind names
  * clean up entities created within your tests 
 
