@@ -22,23 +22,67 @@ This module depends on only Python 2.5 and App Engine SDK.
    * You can also run your tests with web-browser in your production environment. The test will be invoked under real production services(not memory based !DatastoreFileStub) if you configure to do so.
  * Run your tests with special overridden kind() method.
    * You can use this overridden kind method just in your tests without any changes in your code.
-     * For example, entities of  a model class "!MyModel" will be stored as kind "t_MyModel".
+     * For example, entities of  a model class "!MyModel" will be stored as kind "t_!MyModel".
    * Especially useful with tests via remote_api and tests on production(GAEUnit) because you can run your tests without any data pollution.
-     * Of course, you can suppress this behavior by configuration
+     * Of course, you can suppress this behavior by configuration. By this way, you can access real business data on datastore in tests.
  * Clean up all the kinds that are used in your tests.
    * You can delete all the kinds used in your test after running your test.
-     * Only the kinds which is accessed in a particular TestCase, will be deleted.
+     * Only the kinds which is accessed in a particular !TestCase, will be deleted.
      * *accessed* here includes just reading. So if you read a existing kind, the kind will become a target of deletion.
    * *CAUTION*: This feature could be very dangerous if you disable overridden kind method.
 
 == Cautions ==
+=== Key generation ===
+Be careful with this special kind method in your !TestCase. Please see an example bellow.
+{{{
+Key.from_path('MyModel', id)       # NG!
+Key.from_path(MyModel.kind(), id)  # OK!
+}}}
+You should use this style code over entire your application.
 
+=== Parallel test running ===
+With GAEUnit and production environment, all tests run in parallel.
+If you forget this in writing tests, tests run in success on dev environment, but some of tests fail on production environment.
 
+=== Clean up feature is dangerous ===
+*Clean up feature could be very very dangerous if you disable overridden kinds.*
 
-     * Be careful with this special kind method in your !TestCase. Please see an example bellow.
+_Should this feature be prohibited with un-overridden kinds ?_
 
-                  Key.from_path('MyModel', id)       # NG!
-                  Key.from_path(MyModel.kind(), id)  # OK!
+=== With remote_api, tests require long time ===
+Tests with remote_api require very long time. You should choose carefully which test runs with remote_api.
+
+=== setUp/tearDown may require long time ===
+Tests as subclass of GAETestBase do setup of environment in setUp(just before each test function), and do clean up entities in tearDown(just after each test function).
+
+Simple example below:
+{{{
+class HogeTest(GAETestBase):
+    def setUp(self):
+        some.setup.code.here()
+
+    def tearDown(self):
+        some.teardown.code.here()
+
+    def test_foobar(self):
+        many.many.assertions()
+}}}
+This test runs as:
+ # Setup sequence
+   # environment setup
+     * set environment variables
+     * override kind names
+     * build service stubs
+   # usual setUp (ex: some.setup.code.here())
+ # Run Test
+ # Teardown sequence
+   # usual tearDown (ex: some.teardown.code.here())
+   # environment cleaning
+     * clean up kinds (if needed)
+     * restore kind names overriding
+     * restore environment variables
+
+If you put great many entities in test with enabling clean up, tearDown() may run in long-long-time.
 
 = Details =
 
