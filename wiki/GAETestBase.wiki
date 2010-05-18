@@ -108,6 +108,5 @@ Tests as subclass of GAETestBase do setup of environment in setUp(just before ea
 
 If you put great many entities in test with enabling clean up, tearDown() may run in long-long-time.
 
-= Details =
-
 = Let's do it =
+mumumu....
