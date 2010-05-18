@@ -32,6 +32,54 @@ This module depends on only Python 2.5 and App Engine SDK.
    * *CAUTION*: This feature could be very dangerous if you disable overridden kind method.
 
 == How To Use ==
+Simple example below:
+{{{
+import gae_test_base
+
+class HogeTest(gae_test_base.GAETestBase):
+    USE_PRODUCTION_STUBS = True
+
+    def setUp(self):
+        some.setup.code.here()
+
+    def tearDown(self):
+        some.teardown.code.here()
+
+    def test_foobar(self):
+        many.many.assertions()
+}}}
+This test runs as:
+ # Setup sequence
+   # environment setup
+     * set environment variables
+     * override kind names
+     * build service stubs
+   # usual setUp (ex: some.setup.code.here())
+ # Run Test
+ # Teardown sequence
+   # usual tearDown (ex: some.teardown.code.here())
+   # environment cleaning
+     * clean up kinds (if needed)
+     * restore kind names overriding
+     * restore environment variables
+
+You can specify some options which environment tests run on. Options implemented as class attribute of your test cases.
+USE_PRODUCTION_STUBS:
+ If True, tests run with real datastore (and other service stubs) in production environment.
+ default: False
+USE_REMOTE_STUBS:
+ If True, tests run with remote_api in dev environment via CLI. 
+ default: False
+CLEANUP_USED_KIND:
+ If True, all the kinds accessed in test are deleted in tearDown().
+ default: False
+KIND_NAME_UNSWAPPED:
+ If True, kind name overriding suppressed.
+ default: False
+KIND_PREFIX_IN_TEST:
+ This attribute specifies prefix of overridden kind name.
+ If KIND_NAME_UNSWAPPED is True, this option is ignored.
+ default: 't' (in default, !MyModel.kind() returns 't_MyModel')
 
 == Cautions ==
 === Key generation ===
@@ -56,33 +104,6 @@ Tests with remote_api require very long time. You should choose carefully which 
 
 === setUp/tearDown may require long time ===
 Tests as subclass of GAETestBase do setup of environment in setUp(just before each test function), and do clean up entities in tearDown(just after each test function).
-
-Simple example below:
-{{{
-class HogeTest(GAETestBase):
-    def setUp(self):
-        some.setup.code.here()
-
-    def tearDown(self):
-        some.teardown.code.here()
-
-    def test_foobar(self):
-        many.many.assertions()
-}}}
-This test runs as:
- # Setup sequence
-   # environment setup
-     * set environment variables
-     * override kind names
-     * build service stubs
-   # usual setUp (ex: some.setup.code.here())
- # Run Test
- # Teardown sequence
-   # usual tearDown (ex: some.teardown.code.here())
-   # environment cleaning
-     * clean up kinds (if needed)
-     * restore kind names overriding
-     * restore environment variables
 
 If you put great many entities in test with enabling clean up, tearDown() may run in long-long-time.
 
