@@ -31,6 +31,8 @@ This module depends on only Python 2.5 and App Engine SDK.
      * *accessed* here includes just reading. So if you read a existing kind, the kind will become a target of deletion.
    * *CAUTION*: This feature could be very dangerous if you disable overridden kind method.
 
+== How To Use ==
+
 == Cautions ==
 === Key generation ===
 Be careful with this special kind method in your !TestCase. Please see an example bellow.
