@@ -66,20 +66,20 @@ This test runs as:
 You can specify some options which environment tests run on. Options implemented as class attribute of your test cases.
 
 USE_PRODUCTION_STUBS:
- If True, tests run with real datastore (and other service stubs) in production environment.
+ If True, tests run with real datastore (and other service stubs) in production environment.<br />
  default: False
 USE_REMOTE_STUBS:
- If True, tests run with remote_api in dev environment via CLI. 
+ If True, tests run with remote_api in dev environment via CLI. <br />
  default: False
 CLEANUP_USED_KIND:
- If True, all the kinds accessed in test are deleted in tearDown().
+ If True, all the kinds accessed in test are deleted in tearDown().<br />
  default: False
 KIND_NAME_UNSWAPPED:
- If True, kind name overriding suppressed.
+ If True, kind name overriding suppressed.<br />
  default: False
 KIND_PREFIX_IN_TEST:
- This attribute specifies prefix of overridden kind name.
- If KIND_NAME_UNSWAPPED is True, this option is ignored.
+ This attribute specifies prefix of overridden kind name.<br />
+ If KIND_NAME_UNSWAPPED is True, this option is ignored.<br />
  default: 't' (in default, !MyModel.kind() returns 't`_`!MyModel')
 
 == Cautions ==
