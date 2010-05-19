@@ -31,7 +31,7 @@ This module depends on only Python 2.5 and App Engine SDK.
      * *accessed* here includes just reading. So if you read a existing kind, the kind will become a target of deletion.
    * *CAUTION*: This feature could be very dangerous if you disable overridden kind method.
 
-== How To Use ==
+= How To Use =
 Simple example below:
 {{{
 import gae_test_base
@@ -82,8 +82,8 @@ KIND_PREFIX_IN_TEST:
  If KIND_NAME_UNSWAPPED is True, this option is ignored.<br />
  default: 't' (in default, !MyModel.kind() returns 't`_`!MyModel')
 
-== Cautions ==
-=== Key generation ===
+= Cautions =
+== Key generation ==
 Be careful with this special kind method in your !TestCase. Please see an example bellow.
 {{{
 Key.from_path('MyModel', id)       # NG!
@@ -91,19 +91,19 @@ Key.from_path(MyModel.kind(), id)  # OK!
 }}}
 You should use this style code over entire your application.
 
-=== Parallel test running ===
+== Parallel test running ==
 With GAEUnit and production environment, all tests run in parallel.
 If you forget this in writing tests, tests run in success on dev environment, but some of tests fail on production environment.
 
-=== Clean up feature is dangerous ===
+== Clean up feature is dangerous ==
 *Clean up feature could be very very dangerous if you disable overridden kinds.*
 
 _Should this feature be prohibited with un-overridden kinds ?_
 
-=== With remote_api, tests require long time ===
+== With remote_api, tests require long time ==
 Tests with remote_api require very long time. You should choose carefully which test runs with remote_api.
 
-=== setUp/tearDown may require long time ===
+== setUp/tearDown may require long time ==
 Tests as subclass of GAETestBase do setup of environment in setUp(just before each test function), and do clean up entities in tearDown(just after each test function).
 
 If you put great many entities in test with enabling clean up, tearDown() may run in long-long-time.
