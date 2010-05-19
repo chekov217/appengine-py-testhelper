@@ -98,7 +98,7 @@ If you forget this in writing tests, tests run in success on dev environment, bu
 == Clean up feature is dangerous ==
 *Clean up feature could be very very dangerous if you disable overridden kinds.*
 
-_Should this feature be prohibited with un-overridden kinds ?_
+_Should this feature be forcely disabled with un-overridden kinds ?_
 
 == With remote_api, tests require long time ==
 Tests with remote_api require very long time. You should choose carefully which test runs with remote_api.
