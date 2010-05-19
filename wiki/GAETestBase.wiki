@@ -15,7 +15,7 @@ This module depends on only Python 2.5 and App Engine SDK.
 = What can I do with this module? =
  * Run your tests via CLI
    * You can run your tests without setting up necessary environments (e.g. stubs,  env, etc..)
-   * Tests will be use remote_api connection for accessing production datastore if you configure to do so in your TestCase.
+   * Tests will be use remote_api connection for accessing production datastore if you configure to do so in your !TestCase.
  * Run your tests via GAEUnit
    * GAEUnit is a web-based test runner hosted at: [http://code.google.com/p/gaeunit/ GAEUnit - Google Code]
    * You can run your test with web-browser in your development environment.
@@ -109,4 +109,4 @@ Tests as subclass of GAETestBase do setup of environment in setUp(just before ea
 If you put great many entities in test with enabling clean up, tearDown() may run in long-long-time.
 
 = Let's do it =
-mumumu....
+See great translation by Kay's daddy. [http://takashi-matsuo.blogspot.com/2010/05/introducing-gaetestbase.html Moon blue diary: Introducing GAETestBase]
