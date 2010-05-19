@@ -1,6 +1,47 @@
 #!/usr/bin/env python2.5
 # -*- coding:utf-8 -*-
 
+'''
+GAETestBase: Google App Engine Unit Test Baseclass
+
+Visit http://code.google.com/p/appengine-py-testhelper/
+
+------------------------------------------------------------------------------
+Copyright (c) 2010, TAGOMORI Satoshi <tagomoris@gmail.com>.
+All rights reserved.
+
+Distributed under the following New BSD license:
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+------------------------------------------------------------------------------
+'''
+
+__author__ = "TAGOMORI Satoshi"
+__email__ = "tagomoris@gmail.com"
+# __version__ = ""
+__copyright__= "Copyright (c) 2010, TAGOMORI Satoshi"
+__license__ = "New BSD"
+__url__ = "http://code.google.com/p/appengine-py-testhelper/"
+
 import os, sys
 import functools
 import unittest
@@ -13,7 +54,7 @@ REMOTE_API_ENTRY_POINT = '/remote_api'
 def is_in_production():
     try:
         from google3.apphosting.runtime import _apphosting_runtime___python__apiproxy
-        _apphosting_runtime___python__apiproxy = None
+        del _apphosting_runtime___python__apiproxy
         return True
     except ImportError:
         return False
@@ -57,7 +98,10 @@ def restore_environments(testcase):
         os.environ = testcase.original_env
 
 def auth_func():
-    return (raw_input('Email: '), getpass.getpass('Password: '))
+    pair = (raw_input('Email: '), getpass.getpass('Password: '))
+    _AUTH_PAIR = lambda : pair
+    return pair
+_AUTH_PAIR = auth_func
 
 def get_gaeunit_frame():
     frame = sys._getframe()
@@ -79,7 +123,8 @@ def get_original_apiproxy_behind_gaeunit():
 def get_dev_apiproxy():
     _apiproxy = apiproxy_stub_map.APIProxyStubMap()
 
-    _apiproxy.RegisterStub('datastore_v3', datastore_file_stub.DatastoreFileStub(APP_ID, None, None))
+    _apiproxy.RegisterStub('datastore_v3',
+                           datastore_file_stub.DatastoreFileStub(APP_ID, None, None))
     _apiproxy.RegisterStub('user', user_service_stub.UserServiceStub())
     _apiproxy.RegisterStub('urlfetch', urlfetch_stub.URLFetchServiceStub())
     _apiproxy.RegisterStub('mail', mail_stub.MailServiceStub()) 
@@ -187,7 +232,7 @@ class GAETestBase(unittest.TestCase):
             pass # use apiproxy prepared by GAEUnit (datastore_stub is datastore_file_stub)
         elif not is_in_gaeunit() and self.use_remote_api():
             remote_api_stub.ConfigureRemoteApi(APP_ID, REMOTE_API_ENTRY_POINT,
-                                               auth_func,
+                                               _AUTH_PAIR,
                                                secure=True, save_cookies=True)
             remote_api_stub.MaybeInvokeAuthentication()
         else:
