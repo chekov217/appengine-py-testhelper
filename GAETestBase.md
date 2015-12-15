@@ -1,0 +1,110 @@
+# Overview #
+GAETestBase is a useful subclass of the standard unittest.TestCase. You can just write your test classes as usual by just extending GAETestBase class for utilizing this modules functionality.
+
+With this module, you can do
+  * skip to write code to setup dev environment
+  * run your tests via CLI as usual
+  * run your tests via GAEUnit under real production environment
+  * run your tests with special overridden kind names
+  * clean up entities created within your tests
+
+This module depends on only Python 2.5 and App Engine SDK.
+
+# What can I do with this module? #
+  * Run your tests via CLI
+    * You can run your tests without setting up necessary environments (e.g. stubs,  env, etc..)
+    * Tests will be use remote\_api connection for accessing production datastore if you configure to do so in your TestCase.
+  * Run your tests via GAEUnit
+    * GAEUnit is a web-based test runner hosted at: [GAEUnit - Google Code](http://code.google.com/p/gaeunit/)
+    * You can run your test with web-browser in your development environment.
+    * You can also run your tests with web-browser in your production environment. The test will be invoked under real production services(not memory based DatastoreFileStub) if you configure to do so.
+  * Run your tests with special overridden kind() method.
+    * You can use this overridden kind method just in your tests without any changes in your code.
+      * For example, entities of  a model class "MyModel" will be stored as kind "t`_`MyModel".
+    * Especially useful with tests via remote\_api and tests on production(GAEUnit) because you can run your tests without any data pollution.
+      * Of course, you can suppress this behavior by configuration. By this way, you can access real business data on datastore in tests.
+  * Clean up all the kinds that are used in your tests.
+    * You can delete all the kinds used in your test after running your test.
+      * Only the kinds which is accessed in a particular TestCase, will be deleted.
+      * **accessed** here includes just reading. So if you read a existing kind, the kind will become a target of deletion.
+    * **CAUTION**: This feature could be very dangerous if you disable overridden kind method.
+
+# How To Use #
+Simple example below:
+```
+import gae_test_base
+
+class HogeTest(gae_test_base.GAETestBase):
+    USE_PRODUCTION_STUBS = True
+
+    def setUp(self):
+        some.setup.code.here()
+
+    def tearDown(self):
+        some.teardown.code.here()
+
+    def test_foobar(self):
+        many.many.assertions()
+```
+This test runs as:
+  1. Setup sequence
+    1. environment setup
+      * set environment variables
+      * override kind names
+      * build service stubs
+    1. usual setUp (ex: some.setup.code.here())
+  1. Run Test
+  1. Teardown sequence
+    1. usual tearDown (ex: some.teardown.code.here())
+    1. environment cleaning
+      * clean up kinds (if needed)
+      * restore kind names overriding
+      * restore environment variables
+
+You can specify some options which environment tests run on. Options implemented as class attribute of your test cases.
+
+USE\_PRODUCTION\_STUBS:
+> If True, tests run with real datastore (and other service stubs) in production environment.<br />
+> default: False
+USE\_REMOTE\_STUBS:
+> If True, tests run with remote\_api in dev environment via CLI. <br />
+> default: False
+CLEANUP\_USED\_KIND:
+> If True, all the kinds accessed in test are deleted in tearDown().<br />
+> default: False
+KIND\_NAME\_UNSWAPPED:
+> If True, kind name overriding suppressed.<br />
+> default: False
+KIND\_PREFIX\_IN\_TEST:
+> This attribute specifies prefix of overridden kind name.<br />
+> If KIND\_NAME\_UNSWAPPED is True, this option is ignored.<br />
+> default: 't' (in default, MyModel.kind() returns 't`_`MyModel')
+
+# Cautions #
+## Key generation ##
+Be careful with this special kind method in your TestCase. Please see an example bellow.
+```
+Key.from_path('MyModel', id)       # NG!
+Key.from_path(MyModel.kind(), id)  # OK!
+```
+You should use this style code over entire your application.
+
+## Parallel test running ##
+With GAEUnit and production environment, all tests run in parallel.
+If you forget this in writing tests, tests run in success on dev environment, but some of tests fail on production environment.
+
+## Clean up feature is dangerous ##
+**Clean up feature could be very very dangerous if you disable overridden kinds.**
+
+_Should this feature be forcely disabled with un-overridden kinds ?_
+
+## With remote\_api, tests require long time ##
+Tests with remote\_api require very long time. You should choose carefully which test runs with remote\_api.
+
+## setUp/tearDown may require long time ##
+Tests as subclass of GAETestBase do setup of environment in setUp(just before each test function), and do clean up entities in tearDown(just after each test function).
+
+If you put great many entities in test with enabling clean up, tearDown() may run in long-long-time.
+
+# Let's do it #
+See great translation by Kay's daddy. [Moon blue diary: Introducing GAETestBase](http://takashi-matsuo.blogspot.com/2010/05/introducing-gaetestbase.html)
